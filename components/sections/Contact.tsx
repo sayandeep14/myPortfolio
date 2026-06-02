@@ -7,11 +7,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const links = [
-  { label: "Email",     value: "sayandeepgiri14@gmail.com", href: "mailto:sayandeepgiri14@gmail.com" },
-  { label: "Email",     value: "neel.ju14@hotmail.com",     href: "mailto:neel.ju14@hotmail.com" },
-  { label: "Phone",     value: "+91 97482 81590",           href: "tel:+919748281590" },
-  { label: "Phone",     value: "+91 82502 47128",           href: "tel:+918250247128" },
-  { label: "WhatsApp",  value: "+91 97482 81590",           href: "https://wa.me/+919748281590" },
+  { label: "Email",        value: "sayandeepgiri14@gmail.com", href: "mailto:sayandeepgiri14@gmail.com" },
+  { label: "Email",        value: "neel.ju14@hotmail.com",     href: "mailto:neel.ju14@hotmail.com" },
+  { label: "Phone",        value: "+91 97482 81590",           href: "tel:+919748281590" },
+  { label: "Phone",        value: "+91 82502 47128",           href: "tel:+918250247128" },
+  { label: "WhatsApp",     value: "+91 97482 81590",           href: "https://wa.me/+919748281590" },
+  { label: "Drop a note",  value: "Anonymous or signed →",     href: "/message" },
 ];
 
 export default function Contact() {

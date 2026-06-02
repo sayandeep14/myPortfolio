@@ -25,8 +25,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Don't render on any admin route — admin has its own sidebar
-  if (pathname.startsWith("/admin")) return null;
+  // Don't render on admin routes or the /message page (they have their own minimal nav)
+  if (pathname.startsWith("/admin") || pathname === "/message") return null;
 
   const isLab   = pathname.startsWith("/the-lab");
   const links   = isLab ? labLinks : portfolioLinks;

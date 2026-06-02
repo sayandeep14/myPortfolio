@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# middleware
+.middleware.ts.swp
+
+# local details
+details.yaml

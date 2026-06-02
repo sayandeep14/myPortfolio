@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import PostCard from "@/components/lab/PostCard";
-import ContactForm from "@/components/lab/ContactForm";
 import type { Post, PostType } from "@/lib/types";
 
 const FILTERS: { value: PostType | "all"; label: string }[] = [
@@ -41,6 +40,23 @@ export default async function TheLabPage({
           <p style={{ fontSize: "0.9rem", fontWeight: 300, color: "rgba(245,244,240,0.45)", maxWidth: 460, lineHeight: 1.85 }}>
             My creative and intellectual corner — articles, links I find interesting, movies, music and books that shape how I think.
           </p>
+          <a
+            href="/message"
+            style={{
+              display: "inline-block",
+              marginTop: "2rem",
+              fontSize: "0.68rem",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              textDecoration: "none",
+              borderBottom: "1px solid rgba(192,57,43,0.35)",
+              paddingBottom: "0.2rem",
+              transition: "border-color 0.2s",
+            }}
+          >
+            Drop a note ↗
+          </a>
         </div>
       </section>
 
@@ -82,20 +98,6 @@ export default async function TheLabPage({
               {feed.map((post) => <PostCard key={post.id} post={post} />)}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section style={{ padding: "6rem 0", backgroundColor: "var(--ink)" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 2rem" }}>
-          <p style={{ fontSize: "0.7rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1.5rem" }}>
-            Drop a note
-          </p>
-          <h2 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 500, color: "var(--bg)", lineHeight: 1.15, marginBottom: "3rem" }}>
-            Say something,<br />
-            <em style={{ color: "var(--accent)" }}>anonymously or not.</em>
-          </h2>
-          <ContactForm />
         </div>
       </section>
 
