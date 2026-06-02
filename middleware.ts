@@ -1,8 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// mailto: and tel: shortlinks (next.config redirects only support http/https)
+const PROTOCOL_SHORTLINKS: Record<string, string> = {
+  "/email":   "mailto:sayandeepgiri14@gmail.com",
+  "/mail":    "mailto:sayandeepgiri14@gmail.com",
+  "/gmail":   "mailto:sayandeepgiri14@gmail.com",
+  "/hotmail": "mailto:neel.ju14@hotmail.com",
+  "/phone":   "tel:+919748281590",
+  "/call":    "tel:+919748281590",
+  "/phone2":  "tel:+918250247128",
+};
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Resolve mailto/tel shortlinks before any auth logic
+  const proto = PROTOCOL_SHORTLINKS[pathname];
+  if (proto) return NextResponse.redirect(proto);
 
   // If Supabase env vars aren't configured yet, just protect /admin routes
   // without crashing the rest of the site
