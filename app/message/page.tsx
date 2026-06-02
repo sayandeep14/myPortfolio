@@ -132,8 +132,8 @@ function SpawnedElement({ item, onDone }: { item: SpawnedItem; onDone: (id: numb
   useEffect(() => {
     // Double rAF so the browser paints phase-0 before transitioning
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => setPhase(1)));
-    const t1 = setTimeout(() => setPhase(2), 420);
-    const t2 = setTimeout(() => onDone(item.id), 2000);
+    const t1 = setTimeout(() => setPhase(2), 500);
+    const t2 = setTimeout(() => onDone(item.id), 4500);
     return () => { cancelAnimationFrame(raf); clearTimeout(t1); clearTimeout(t2); };
   }, [item.id, onDone]);
 
@@ -145,7 +145,7 @@ function SpawnedElement({ item, onDone }: { item: SpawnedItem; onDone: (id: numb
   const transition =
     phase === 0 ? "none"
     : phase === 1 ? "transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s"
-    : "transform 1.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1.4s ease-out";
+    : "transform 3.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 3.4s ease-out";
 
   return (
     <div
@@ -336,7 +336,7 @@ function MessagePageInner() {
     if (target.closest(".msg-card") || target.closest(".msg-back")) return;
 
     const angle = Math.random() * Math.PI * 2;
-    const dist = 260 + Math.random() * 340;
+    const dist = 140 + Math.random() * 180;
 
     setSpawned((prev) => [
       ...prev,
