@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const DNAHelix = dynamic(() => import("@/components/three/DNAHelix"), { ssr: false });
+const LiveCodeEditor = dynamic(() => import("@/components/ui/LiveCodeEditor"), { ssr: false });
 
 const stats = [
   { value: "22", label: "Years old" },
@@ -191,7 +191,7 @@ export default function About() {
             </div>
           </div>
 
-          {/* DNA Helix — replace with <img> when you have a photo */}
+          {/* Live code editor */}
           <div
             ref={helixRef}
             className="about-helix"
@@ -205,7 +205,7 @@ export default function About() {
                 right: -16,
                 bottom: -16,
                 left: 16,
-                border: "1px solid rgba(17,17,17,0.12)",
+                border: "1px solid rgba(17,17,17,0.18)",
                 zIndex: 0,
               }}
             />
@@ -214,12 +214,12 @@ export default function About() {
                 position: "relative",
                 width: "100%",
                 height: "100%",
-                backgroundColor: "#e8e7e3",
                 overflow: "hidden",
                 zIndex: 1,
+                boxShadow: "0 24px 64px rgba(0,0,0,0.22)",
               }}
             >
-              <DNAHelix />
+              <LiveCodeEditor />
             </div>
           </div>
         </div>
