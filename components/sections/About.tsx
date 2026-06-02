@@ -102,7 +102,7 @@ export default function About() {
           className="about-grid"
         >
           {/* Text */}
-          <div ref={textRef} style={{ maxWidth: 520 }}>
+          <div ref={textRef} style={{ maxWidth: 520, minWidth: 0 }}>
             <h2
               style={{
                 fontFamily: "var(--font-playfair), Georgia, serif",
@@ -147,6 +147,7 @@ export default function About() {
 
             <div
               ref={statsRef}
+              className="about-stats"
               style={{
                 marginTop: "2.5rem",
                 display: "flex",
@@ -156,8 +157,10 @@ export default function About() {
               {stats.map((stat, i) => (
                 <div
                   key={i}
+                  className="about-stat-item"
                   style={{
                     flex: 1,
+                    minWidth: 0,
                     paddingRight: i < stats.length - 1 ? "1.5rem" : 0,
                     borderRight: i < stats.length - 1 ? "1px solid var(--border)" : "none",
                     paddingLeft: i > 0 ? "1.5rem" : 0,
@@ -231,12 +234,26 @@ export default function About() {
         }
         @media (max-width: 767px) {
           #about { padding: 5rem 0 !important; }
-          .about-stats { flex-direction: row; flex-wrap: wrap; gap: 1.5rem !important; }
           .about-helix {
             max-width: 100% !important;
             width: 100% !important;
             aspect-ratio: auto !important;
             height: 460px !important;
+          }
+          .about-stats {
+            gap: 0 !important;
+          }
+          .about-stat-item {
+            padding-left: 0.6rem !important;
+            padding-right: 0.6rem !important;
+          }
+          .about-stat-item:first-child { padding-left: 0 !important; }
+          .about-stat-item:last-child  { padding-right: 0 !important; }
+          .about-stat-item p:first-child { font-size: 1.5rem !important; }
+          .about-stat-item p:last-child  {
+            font-size: 0.55rem !important;
+            letter-spacing: 0.06em !important;
+            white-space: normal !important;
           }
         }
       `}</style>
