@@ -1374,7 +1374,7 @@ export default function LiveCodeEditor() {
   const typedLines = snippet.slice(0, charIdx).split("\n");
 
   return (
-    <div style={{
+    <div className="lcd-root" style={{
       width: "100%", height: "100%",
       display: "flex", flexDirection: "column",
       backgroundColor: C.bg,
@@ -1459,7 +1459,7 @@ export default function LiveCodeEditor() {
         </div>
 
         {/* Code */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "10px 16px" }}>
+        <div style={{ flex: 1, overflow: "auto", padding: "10px 16px" }}>
           <pre style={{
             margin: 0,
             fontFamily: "inherit", fontSize: "inherit", lineHeight: "inherit",
@@ -1511,6 +1511,9 @@ export default function LiveCodeEditor() {
         .lcd-tabs { scrollbar-width: thin; scrollbar-color: ${C.border} transparent; }
         .lcd-tabs::-webkit-scrollbar { height: 2px; }
         .lcd-tabs::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 2px; }
+        @media (max-width: 767px) {
+          .lcd-root { font-size: 11px !important; }
+        }
       `}</style>
     </div>
   );

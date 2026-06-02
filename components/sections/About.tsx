@@ -232,7 +232,12 @@ export default function About() {
         @media (max-width: 767px) {
           #about { padding: 5rem 0 !important; }
           .about-stats { flex-direction: row; flex-wrap: wrap; gap: 1.5rem !important; }
-          .about-helix { max-width: 280px !important; aspect-ratio: 1/1 !important; }
+          .about-helix {
+            max-width: 100% !important;
+            width: 100% !important;
+            aspect-ratio: auto !important;
+            height: 460px !important;
+          }
         }
       `}</style>
     </section>
