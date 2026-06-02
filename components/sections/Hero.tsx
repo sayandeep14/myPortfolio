@@ -100,11 +100,14 @@ export default function Hero() {
         <NeuralBrain />
       </div>
 
+      {/* Mobile-only gradient scrim — sits between brain and text so text is readable */}
+      <div className="hero-scrim" />
+
       {/* Content */}
       <div
         style={{
           position: "relative",
-          zIndex: 2,
+          zIndex: 3,
           maxWidth: 1200,
           margin: "0 auto",
           padding: "0 2rem",
@@ -266,6 +269,9 @@ export default function Hero() {
 
       <style>{`
         /* Desktop layout */
+        .hero-scrim {
+          display: none;
+        }
         .hero-3d {
           position: absolute;
           top: 0;
@@ -309,7 +315,7 @@ export default function Hero() {
           flex-direction: column;
           align-items: center;
           gap: 0.5rem;
-          z-index: 3;
+          z-index: 4;
         }
 
         /* Mobile overrides */
@@ -317,8 +323,25 @@ export default function Hero() {
           .hero-3d {
             right: 0;
             width: 100%;
-            opacity: 0.28;
+            opacity: 0.22;
             z-index: 1;
+          }
+          /* Gradient scrim: opaque bg at top fading to transparent at bottom.
+             Sits above the brain (z:1) but below the text content (z:2). */
+          .hero-scrim {
+            display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: linear-gradient(
+              to bottom,
+              #f5f4f0 0%,
+              #f5f4f0 38%,
+              rgba(245, 244, 240, 0.82) 58%,
+              rgba(245, 244, 240, 0.3) 78%,
+              transparent 100%
+            );
           }
           .hero-text-wrap {
             max-width: 100%;
