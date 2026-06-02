@@ -258,7 +258,6 @@ export default function NeuralBrain() {
     }
     window.addEventListener("resize", onResize);
 
-    const clock = new THREE.Clock();
     const _force = new THREE.Vector3();
     const _diff = new THREE.Vector3();
     const _invQ = new THREE.Quaternion();
@@ -266,10 +265,13 @@ export default function NeuralBrain() {
 
     let autoRotY = 0;
     let hoveredHub = -1;
+    let prevTime = performance.now();
 
     function animate() {
-      const dt = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      const now = performance.now();
+      const dt = Math.min((now - prevTime) / 1000, 0.1);
+      const elapsed = now / 1000;
+      prevTime = now;
 
       // Gentle auto-rotate
       autoRotY += dt * 0.12;

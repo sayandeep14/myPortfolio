@@ -7,60 +7,62 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const social = [
-  { label: "Instagram",  handle: "@shreekalpo",       href: "https://www.instagram.com/shreekalpo/" },
-  { label: "LinkedIn",   handle: "in/shreekalpo",      href: "https://www.linkedin.com/in/shreekalpo/" },
-  { label: "X / Twitter",handle: "@shreekalpo_",       href: "https://x.com/shreekalpo_/" },
-  { label: "Facebook",   handle: "@shreekalpo1",       href: "https://www.facebook.com/shreekalpo1/" },
-  { label: "Pinterest",  handle: "@shreekalpo",        href: "https://www.pinterest.com/shreekalpo/" },
-  { label: "Behance",    handle: "sayandeepgiri1",     href: "https://www.behance.net/sayandeepgiri1" },
-  { label: "Dribbble",   handle: "@sayandeep-giri",    href: "https://dribbble.com/sayandeep-giri" },
-  { label: "Reddit",     handle: "u/Actual-Ad4212",    href: "https://www.reddit.com/user/Actual-Ad4212/" },
-  { label: "Vimeo",      handle: "shreekalpo",         href: "https://vimeo.com/shreekalpo" },
-  { label: "WhatsApp",   handle: "+91 97482 81590",    href: "https://wa.me/+919748281590" },
+  { label: "Instagram",   handle: "@shreekalpo",     href: "https://www.instagram.com/shreekalpo/" },
+  { label: "LinkedIn",    handle: "in/shreekalpo",    href: "https://www.linkedin.com/in/shreekalpo/" },
+  { label: "X / Twitter", handle: "@shreekalpo_",     href: "https://x.com/shreekalpo_/" },
+  { label: "Facebook",    handle: "@shreekalpo1",     href: "https://www.facebook.com/shreekalpo1/" },
+  { label: "Pinterest",   handle: "@shreekalpo",      href: "https://www.pinterest.com/shreekalpo/" },
+  { label: "Behance",     handle: "sayandeepgiri1",   href: "https://www.behance.net/sayandeepgiri1" },
+  { label: "Dribbble",    handle: "@sayandeep-giri",  href: "https://dribbble.com/sayandeep-giri" },
+  { label: "Reddit",      handle: "u/Actual-Ad4212",  href: "https://www.reddit.com/user/Actual-Ad4212/" },
+  { label: "Vimeo",       handle: "shreekalpo",       href: "https://vimeo.com/shreekalpo" },
 ];
 
 const technical = [
-  { label: "GitHub",         handle: "sayandeep14",      href: "https://github.com/sayandeep14" },
-  { label: "Stack Overflow", handle: "sayandeep-giri",   href: "https://stackoverflow.com/users/32794709/sayandeep-giri" },
-  { label: "Medium",         handle: "@shreekalpo",      href: "https://medium.com/@shreekalpo" },
-  { label: "Dev.to",         handle: "@shreekalpo",      href: "https://dev.to/shreekalpo" },
-  { label: "Hashnode",       handle: "@shreekalpo",      href: "https://hashnode.com/@shreekalpo" },
-  { label: "Substack",       handle: "shreekalpo",       href: "https://shreekalpo.substack.com/" },
-  { label: "Beehiiv",        handle: "shreekalpo",       href: "https://shreekalpo.beehiiv.com/" },
-  { label: "CodePen",        handle: "Sayandeep-Giri",   href: "https://codepen.io/Sayandeep-Giri" },
-  { label: "LeetCode",       handle: "neel-ju14",        href: "https://leetcode.com/u/neel-ju14/" },
-  { label: "Codeforces",     handle: "shreekalpo.js",    href: "https://codeforces.com/profile/shreekalpo.js" },
+  { label: "GitHub",         handle: "sayandeep14",    href: "https://github.com/sayandeep14" },
+  { label: "Stack Overflow", handle: "sayandeep-giri", href: "https://stackoverflow.com/users/32794709/sayandeep-giri" },
+  { label: "Medium",         handle: "@shreekalpo",    href: "https://medium.com/@shreekalpo" },
+  { label: "Dev.to",         handle: "@shreekalpo",    href: "https://dev.to/shreekalpo" },
+  { label: "Hashnode",       handle: "@shreekalpo",    href: "https://hashnode.com/@shreekalpo" },
+  { label: "Substack",       handle: "shreekalpo",     href: "https://shreekalpo.substack.com/" },
+  { label: "Beehiiv",        handle: "shreekalpo",     href: "https://shreekalpo.beehiiv.com/" },
+  { label: "CodePen",        handle: "Sayandeep-Giri", href: "https://codepen.io/Sayandeep-Giri" },
+  { label: "LeetCode",       handle: "neel-ju14",      href: "https://leetcode.com/u/neel-ju14/" },
+  { label: "Codeforces",     handle: "shreekalpo.js",  href: "https://codeforces.com/profile/shreekalpo.js" },
 ];
 
-function LinkRow({ label, handle, href, index }: { label: string; handle: string; href: string; index: number }) {
+function Tile({ label, handle, href }: { label: string; handle: string; href: string }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="link-row"
-      data-index={index}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0.9rem 0",
-        borderBottom: "1px solid var(--border)",
-        textDecoration: "none",
-        gap: "1rem",
-      }}
+      className="link-tile"
+      style={{ textDecoration: "none", display: "block" }}
     >
-      <span style={{ fontSize: "0.65rem", letterSpacing: "0.13em", textTransform: "uppercase", color: "var(--muted)", whiteSpace: "nowrap" }}>
-        {label}
-      </span>
-      <span
-        className="link-handle"
-        style={{ fontSize: "0.82rem", fontWeight: 300, color: "var(--ink)", transition: "color 0.2s", textAlign: "right" }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--ink)")}
+      <div
+        className="link-tile-inner"
+        style={{
+          border: "1px solid var(--border)",
+          padding: "1rem 1.1rem",
+          transition: "border-color 0.2s, background-color 0.2s",
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--accent)";
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = "rgba(192,57,43,0.04)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
+        }}
       >
-        {handle} ↗
-      </span>
+        <p style={{ fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "0.45rem" }}>
+          {label}
+        </p>
+        <p style={{ fontSize: "0.82rem", fontWeight: 400, color: "var(--ink)", lineHeight: 1.2 }}>
+          {handle} <span style={{ color: "var(--accent)", fontSize: "0.7rem" }}>↗</span>
+        </p>
+      </div>
     </a>
   );
 }
@@ -76,11 +78,11 @@ export default function Links() {
         { y: 0, opacity: 1, duration: 1.1, ease: "power3.out", scrollTrigger: { trigger: sectionRef.current, start: "top 78%" } }
       );
 
-      sectionRef.current?.querySelectorAll(".links-col").forEach((col, i) => {
+      sectionRef.current?.querySelectorAll(".links-group").forEach((group, i) => {
         gsap.fromTo(
-          col,
+          group,
           { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: i * 0.12, scrollTrigger: { trigger: sectionRef.current, start: "top 72%" } }
+          { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: i * 0.15, scrollTrigger: { trigger: sectionRef.current, start: "top 72%" } }
         );
       });
     }, sectionRef);
@@ -114,39 +116,41 @@ export default function Links() {
           Across the web.
         </h2>
 
-        <div className="links-grid">
-          {/* Social column */}
-          <div className="links-col">
-            <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "0.5rem", paddingBottom: "0.75rem", borderBottom: "2px solid var(--ink)" }}>
-              Social
-            </p>
-            {social.map((item, i) => (
-              <LinkRow key={item.href} {...item} index={i} />
-            ))}
-          </div>
-
-          {/* Technical column */}
-          <div className="links-col">
-            <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "0.5rem", paddingBottom: "0.75rem", borderBottom: "2px solid var(--ink)" }}>
-              Technical
-            </p>
-            {technical.map((item, i) => (
-              <LinkRow key={item.href} {...item} index={i} />
-            ))}
+        {/* Social */}
+        <div className="links-group" style={{ marginBottom: "3rem" }}>
+          <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "1.25rem" }}>
+            Social
+          </p>
+          <div className="tiles-grid">
+            {social.map((item) => <Tile key={item.href} {...item} />)}
           </div>
         </div>
+
+        {/* Technical */}
+        <div className="links-group">
+          <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "1.25rem" }}>
+            Technical
+          </p>
+          <div className="tiles-grid">
+            {technical.map((item) => <Tile key={item.href} {...item} />)}
+          </div>
+        </div>
+
       </div>
 
       <style>{`
-        .links-grid {
+        .tiles-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0 5rem;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 0.6rem;
+        }
+        @media (max-width: 1023px) {
+          .tiles-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
         @media (max-width: 767px) {
           #links { padding: 5rem 0 5rem !important; }
-          .links-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
           .links-head { margin-bottom: 2.5rem !important; }
+          .tiles-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
     </section>
