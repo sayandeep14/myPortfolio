@@ -23,12 +23,12 @@ export default function About() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Text slides in from left
+      // Text fades up
       gsap.fromTo(
         textRef.current,
-        { x: -60, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
-          x: 0,
+          y: 0,
           opacity: 1,
           duration: 1.1,
           ease: "power3.out",
@@ -36,12 +36,12 @@ export default function About() {
         }
       );
 
-      // Helix slides in from right
+      // Editor fades up with slight delay
       gsap.fromTo(
         helixRef.current,
-        { x: 60, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
-          x: 0,
+          y: 0,
           opacity: 1,
           duration: 1.1,
           ease: "power3.out",
@@ -76,10 +76,9 @@ export default function About() {
         padding: "9rem 0",
         backgroundColor: "var(--bg)",
         borderTop: "1px solid var(--border)",
-        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
+      <div style={{ maxWidth: 1200, minWidth: 0, margin: "0 auto", padding: "0 2rem" }}>
         <p
           style={{
             marginBottom: "4rem",
@@ -95,7 +94,7 @@ export default function About() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr",
+            gridTemplateColumns: "minmax(0, 1fr)",
             gap: "4rem",
             alignItems: "center",
           }}
@@ -125,6 +124,7 @@ export default function About() {
                 fontSize: "0.95rem",
                 fontWeight: 300,
                 lineHeight: 1.9,
+                minWidth: 0,
                 color: "var(--muted)",
                 fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
               }}
@@ -230,30 +230,40 @@ export default function About() {
 
       <style>{`
         @media (min-width: 1024px) {
-          .about-grid { grid-template-columns: 1fr 1fr !important; }
+          .about-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important; }
         }
         @media (max-width: 767px) {
           #about { padding: 5rem 0 !important; }
+
+          /* Editor container */
           .about-helix {
             max-width: 100% !important;
             width: 100% !important;
             aspect-ratio: auto !important;
             height: 460px !important;
           }
+          /* Hide decorative offset border on mobile — prevents right-edge bleed */
+          .about-helix > div:first-child { display: none !important; }
+
+          /* Stats: switch from flex to grid so columns are hard-constrained */
           .about-stats {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            align-items: start !important;
             gap: 0 !important;
           }
           .about-stat-item {
-            padding-left: 0.6rem !important;
-            padding-right: 0.6rem !important;
+            padding: 0 0.5rem !important;
+            border-right: 1px solid var(--border) !important;
+            overflow: hidden !important;
           }
           .about-stat-item:first-child { padding-left: 0 !important; }
-          .about-stat-item:last-child  { padding-right: 0 !important; }
-          .about-stat-item p:first-child { font-size: 1.5rem !important; }
+          .about-stat-item:last-child  { padding-right: 0 !important; border-right: none !important; }
+          .about-stat-item p:first-child { font-size: 1.4rem !important; }
           .about-stat-item p:last-child  {
-            font-size: 0.55rem !important;
-            letter-spacing: 0.06em !important;
-            white-space: normal !important;
+            font-size: 0.5rem !important;
+            letter-spacing: 0.04em !important;
+            word-break: break-word !important;
           }
         }
       `}</style>
