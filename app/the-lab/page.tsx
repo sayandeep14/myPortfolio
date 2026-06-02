@@ -32,7 +32,7 @@ export default async function TheLabPage({
       <section style={{ padding: "8rem 0 4rem", backgroundColor: "var(--ink)", borderBottom: "1px solid rgba(245,244,240,0.08)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "1.5rem" }}>
-            06 — The Lab
+            The Lab
           </p>
           <h1 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 500, color: "var(--bg)", lineHeight: 1.1, marginBottom: "1.5rem" }}>
             Thoughts, reviews &amp;<br />
