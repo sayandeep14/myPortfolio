@@ -216,7 +216,7 @@ export default function About() {
                 height: "100%",
                 overflow: "hidden",
                 zIndex: 1,
-                boxShadow: "0 24px 64px rgba(0,0,0,0.22)",
+                borderRadius: 14,
               }}
             >
               <LiveCodeEditor />
