@@ -7,7 +7,6 @@ const NAV_LINKS = [
   { href: "/admin/posts/new", label: "+ New Post" },
   { href: "/admin/messages",  label: "Messages" },
   { href: "/the-lab",         label: "View The Lab ↗" },
-  { href: "/",                label: "← Portfolio" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -33,6 +32,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               {label}
             </Link>
           ))}
+          {/* Hard navigate to avoid client-side layout mismatch between admin and portfolio */}
+          <a
+            href="/"
+            style={{ fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(245,244,240,0.5)", textDecoration: "none", padding: "0.75rem 0", borderBottom: "1px solid rgba(245,244,240,0.06)" }}
+          >
+            ← Portfolio
+          </a>
         </nav>
 
         <SignOutButton />
