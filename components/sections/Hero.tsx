@@ -141,8 +141,8 @@ export default function Hero() {
               style={{
                 display: "block",
                 overflow: "hidden",
-                paddingBottom: "0.22em",
-                marginBottom: "0.15em",
+                paddingBottom: "0.12em",
+                marginBottom: "0.01em",
                 fontFamily: "var(--font-playfair), Georgia, serif",
                 fontSize: "clamp(3.5rem, 8.5vw, 7.5rem)",
                 fontWeight: 600,
