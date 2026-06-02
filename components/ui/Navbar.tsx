@@ -9,6 +9,7 @@ const portfolioLinks = [
   { label: "Experience", href: "/#experience" },
   { label: "Projects",   href: "/#projects" },
   { label: "Hobbies",    href: "/#hobbies" },
+  { label: "Links",      href: "/#links" },
   { label: "Contact",    href: "/#contact" },
   { label: "The Lab",    href: "/the-lab" },
 ];

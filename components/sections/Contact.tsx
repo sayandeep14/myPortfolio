@@ -72,7 +72,7 @@ export default function Contact() {
             color: "var(--accent)",
           }}
         >
-          05 — Contact
+          06 — Contact
         </p>
 
         <h2
