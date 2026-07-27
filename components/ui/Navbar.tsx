@@ -24,9 +24,11 @@ export default function Navbar() {
   const navRef    = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [onDark, setOnDark] = useState(false);
 
-  // Don't render on admin routes or the /message page (they have their own minimal nav)
-  if (pathname.startsWith("/admin") || pathname === "/message") return null;
+  // Admin routes and /message have their own minimal nav. Computed rather than
+  // returned early so the hooks below always run in the same order.
+  const hidden = pathname.startsWith("/admin") || pathname === "/message";
 
   const isLab   = pathname.startsWith("/the-lab");
   const links   = isLab ? labLinks : portfolioLinks;
@@ -51,17 +53,32 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
+  // The journey darkens the page over the contact section; follow it so the bar
+  // doesn't sit as a cream stripe on an ink background.
+  useEffect(() => {
+    const root = document.documentElement;
+    const read = () => setOnDark(root.dataset.journeyDark === "1");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(root, { attributes: true, attributeFilter: ["data-journey-dark"] });
+    return () => obs.disconnect();
+  }, []);
+
+  if (hidden) return null;
+
   const closeMenu = () => setMenuOpen(false);
 
-  const bgColor = isLab
+  const dark = isLab || onDark;
+
+  const bgColor = dark
     ? (scrolled || menuOpen ? "rgba(17,17,17,0.96)"  : "transparent")
     : (scrolled || menuOpen ? "rgba(245,244,240,0.96)" : "transparent");
 
-  const textColor   = isLab ? "var(--bg)"  : "var(--ink)";
-  const mutedColor  = isLab ? "rgba(245,244,240,0.45)" : "var(--muted)";
-  const borderColor = isLab ? "rgba(245,244,240,0.06)" : "var(--border)";
-  const overlayBg   = isLab ? "rgba(17,17,17,0.97)" : "rgba(245,244,240,0.97)";
-  const overlayText = isLab ? "var(--bg)" : "var(--ink)";
+  const textColor   = dark ? "var(--bg)"  : "var(--ink)";
+  const mutedColor  = dark ? "rgba(245,244,240,0.45)" : "var(--muted)";
+  const borderColor = dark ? "rgba(245,244,240,0.06)" : "var(--border)";
+  const overlayBg   = dark ? "rgba(17,17,17,0.97)" : "rgba(245,244,240,0.97)";
+  const overlayText = dark ? "var(--bg)" : "var(--ink)";
 
   return (
     <>

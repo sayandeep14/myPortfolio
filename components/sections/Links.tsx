@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, SplitText, prefersReducedMotion } from "@/lib/gsap";
 
 const social = [
   { label: "Instagram",   handle: "@shreekalpo",     href: "https://www.instagram.com/shreekalpo/" },
@@ -33,36 +30,11 @@ const technical = [
 
 function Tile({ label, handle, href }: { label: string; handle: string; href: string }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="link-tile"
-      style={{ textDecoration: "none", display: "block" }}
-    >
-      <div
-        className="link-tile-inner"
-        style={{
-          border: "1px solid var(--border)",
-          padding: "1rem 1.1rem",
-          transition: "border-color 0.2s, background-color 0.2s",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--accent)";
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = "rgba(192,57,43,0.04)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
-        }}
-      >
-        <p style={{ fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "0.45rem" }}>
-          {label}
-        </p>
-        <p style={{ fontSize: "0.82rem", fontWeight: 400, color: "var(--ink)", lineHeight: 1.2 }}>
-          {handle} <span style={{ color: "var(--accent)", fontSize: "0.7rem" }}>↗</span>
-        </p>
-      </div>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="link-tile">
+      <p className="link-tile-label">{label}</p>
+      <p className="link-tile-handle">
+        {handle} <span>↗</span>
+      </p>
     </a>
   );
 }
@@ -71,86 +43,154 @@ export default function Links() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (prefersReducedMotion()) return;
+
     const ctx = gsap.context(() => {
+      const split = new SplitText(".links-head", { type: "chars", charsClass: "links-char" });
+
       gsap.fromTo(
-        ".links-head",
-        { y: 60, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.1, ease: "power3.out", scrollTrigger: { trigger: sectionRef.current, start: "top 78%" } }
+        split.chars,
+        { rotateX: -90, y: 40, opacity: 0 },
+        {
+          rotateX: 0,
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "journey",
+          stagger: 0.03,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 76%" },
+        }
       );
 
-      sectionRef.current?.querySelectorAll(".links-group").forEach((group, i) => {
+      // Tiles rise in a diagonal wave across each grid.
+      gsap.utils.toArray<HTMLElement>(".tiles-grid").forEach((grid) => {
         gsap.fromTo(
-          group,
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: i * 0.15, scrollTrigger: { trigger: sectionRef.current, start: "top 72%" } }
+          grid.children,
+          { rotateX: -75, y: 50, z: -120, opacity: 0 },
+          {
+            rotateX: 0,
+            y: 0,
+            z: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "journey",
+            stagger: { grid: "auto", from: "start", amount: 0.7 },
+            scrollTrigger: { trigger: grid, start: "top 88%" },
+          }
         );
       });
+
+      return () => split.revert();
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="links"
-      style={{ padding: "8rem 0 8rem", backgroundColor: "var(--bg)" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
+    <section ref={sectionRef} id="links" className="links scene-3d">
+      <div className="links-wrap">
+        <p className="section-label links-label">05 — Find me</p>
 
-        <p style={{ marginBottom: "2rem", fontSize: "0.7rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--accent)" }}>
-          05 — Find me
-        </p>
+        <h2 className="links-head">Across the web.</h2>
 
-        <h2
-          className="links-head"
-          style={{
-            fontFamily: "var(--font-playfair), Georgia, serif",
-            fontSize: "clamp(2.2rem, 5.5vw, 5rem)",
-            fontWeight: 500,
-            lineHeight: 1.05,
-            color: "var(--ink)",
-            marginBottom: "4rem",
-          }}
-        >
-          Across the web.
-        </h2>
-
-        {/* Social */}
-        <div className="links-group" style={{ marginBottom: "3rem" }}>
-          <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "1.25rem" }}>
-            Social
-          </p>
-          <div className="tiles-grid">
-            {social.map((item) => <Tile key={item.href} {...item} />)}
-          </div>
-        </div>
-
-        {/* Technical */}
         <div className="links-group">
-          <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "1.25rem" }}>
-            Technical
-          </p>
+          <p className="links-group-label">Social</p>
           <div className="tiles-grid">
-            {technical.map((item) => <Tile key={item.href} {...item} />)}
+            {social.map((item) => (
+              <Tile key={item.href} {...item} />
+            ))}
           </div>
         </div>
 
+        <div className="links-group">
+          <p className="links-group-label">Technical</p>
+          <div className="tiles-grid">
+            {technical.map((item) => (
+              <Tile key={item.href} {...item} />
+            ))}
+          </div>
+        </div>
       </div>
 
       <style>{`
+        .links {
+          position: relative;
+          padding: 10rem 0;
+          background-color: transparent;
+          border-top: 1px solid var(--border);
+        }
+        .links-wrap { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .links-label { margin-bottom: 2rem; }
+
+        .links-head {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: clamp(2.2rem, 5.5vw, 5rem);
+          font-weight: 500;
+          line-height: 1.05;
+          color: var(--ink);
+          margin-bottom: 4rem;
+          perspective: 800px;
+        }
+        .links-char { display: inline-block; transform-origin: 50% 100% -20px; }
+
+        .links-group { margin-bottom: 3rem; }
+        .links-group:last-child { margin-bottom: 0; }
+        .links-group-label {
+          font-size: 0.6rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--muted);
+          margin-bottom: 1.25rem;
+        }
+
         .tiles-grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
           gap: 0.6rem;
+          perspective: 1100px;
         }
+
+        .link-tile {
+          display: block;
+          text-decoration: none;
+          border: 1px solid var(--border);
+          padding: 1rem 1.1rem;
+          background-color: rgba(245, 244, 240, 0.5);
+          backdrop-filter: blur(4px);
+          transform-style: preserve-3d;
+          will-change: transform;
+          transition: border-color 0.25s, background-color 0.25s, transform 0.35s,
+            box-shadow 0.35s;
+        }
+        .link-tile:hover {
+          border-color: var(--accent);
+          background-color: rgba(192, 57, 43, 0.05);
+          transform: translateZ(40px) translateY(-4px);
+          box-shadow: 0 20px 40px -24px rgba(17, 17, 17, 0.5);
+        }
+
+        .link-tile-label {
+          font-size: 0.58rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--muted);
+          margin-bottom: 0.45rem;
+        }
+        .link-tile-handle {
+          font-size: 0.82rem;
+          font-weight: 400;
+          color: var(--ink);
+          line-height: 1.2;
+        }
+        .link-tile-handle span { color: var(--accent); font-size: 0.7rem; }
+
         @media (max-width: 1023px) {
-          .tiles-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .tiles-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 767px) {
-          #links { padding: 5rem 0 5rem !important; }
-          .links-head { margin-bottom: 2.5rem !important; }
-          .tiles-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .links { padding: 5rem 0; }
+          .links-head { margin-bottom: 2.5rem; }
+          .tiles-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
     </section>

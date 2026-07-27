@@ -45,3 +45,7 @@ next-env.d.ts
 
 # local details
 details.yaml
+# agent tooling (Higgsfield skills installed locally, not part of the site)
+.agents/
+.claude/
+skills-lock.json
