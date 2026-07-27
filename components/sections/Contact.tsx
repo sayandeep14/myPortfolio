@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, SplitText, prefersReducedMotion } from "@/lib/gsap";
 
 const links = [
   { label: "Email",        value: "sayandeepgiri14@gmail.com", href: "mailto:sayandeepgiri14@gmail.com" },
@@ -15,221 +12,270 @@ const links = [
   { label: "Drop a note",  value: "Anonymous or signed →",     href: "/message" },
 ];
 
+const builtWith = [
+  { name: "Claude Code", desc: "AI pair programmer" },
+  { name: "Next.js 16", desc: "App Router · React framework" },
+  { name: "Three.js", desc: "WebGL · morphing particle journey" },
+  { name: "GSAP", desc: "ScrollSmoother · ScrollTrigger · SplitText" },
+  { name: "TipTap", desc: "Rich text editor" },
+  { name: "Supabase", desc: "PostgreSQL · Auth · Storage" },
+  { name: "Resend", desc: "Transactional email" },
+  { name: "Vercel", desc: "Hosting · Edge network" },
+  { name: "TypeScript", desc: "Type-safe codebase" },
+  { name: "GoDaddy", desc: "Domain registrar" },
+];
+
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (prefersReducedMotion()) return;
+
     const ctx = gsap.context(() => {
+      const split = new SplitText(".contact-head", {
+        type: "lines,chars",
+        mask: "lines",
+        linesClass: "contact-line",
+        charsClass: "contact-char",
+      });
+
       gsap.fromTo(
-        ".contact-head",
-        { y: 70, opacity: 0 },
+        split.chars,
+        { rotateX: -95, y: 60, opacity: 0 },
         {
+          rotateX: 0,
           y: 0,
           opacity: 1,
-          duration: 1.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+          duration: 1.15,
+          ease: "journey",
+          stagger: 0.022,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 68%" },
         }
       );
 
-      sectionRef.current?.querySelectorAll(".contact-link").forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { x: -24, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.65,
-            ease: "power2.out",
-            delay: i * 0.08,
-            scrollTrigger: { trigger: sectionRef.current, start: "top 72%" },
-          }
-        );
-      });
+      gsap.fromTo(
+        ".contact-link",
+        { rotateY: -40, x: -30, opacity: 0 },
+        {
+          rotateY: 0,
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "journey",
+          stagger: 0.07,
+          scrollTrigger: { trigger: ".contact-links", start: "top 85%" },
+        }
+      );
+
+      gsap.fromTo(
+        ".built-with-grid > div",
+        { y: 24, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: { grid: "auto", from: "start", amount: 0.5 },
+          scrollTrigger: { trigger: ".built-with-grid", start: "top 90%" },
+        }
+      );
+
+      return () => split.revert();
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="contact"
-      style={{
-        padding: "10rem 0 5rem",
-        backgroundColor: "var(--ink)",
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
-        <p
-          style={{
-            marginBottom: "2rem",
-            fontSize: "0.7rem",
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-            color: "var(--accent)",
-          }}
-        >
-          06 — Contact
-        </p>
+    <section ref={sectionRef} id="contact" className="contact scene-3d">
+      <div className="contact-wrap">
+        <p className="contact-label">06 — Contact</p>
 
-        <h2
-          className="contact-head"
-          style={{
-            fontFamily: "var(--font-playfair), Georgia, serif",
-            fontSize: "clamp(2.5rem, 7vw, 6rem)",
-            fontWeight: 500,
-            lineHeight: 1.05,
-            color: "var(--bg)",
-            marginBottom: "5rem",
-          }}
-        >
+        <h2 className="contact-head">
           Let&apos;s make
           <br />
-          something <em style={{ color: "var(--accent)" }}>great.</em>
+          something <em>great.</em>
         </h2>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr",
-            gap: "3rem",
-            borderTop: "1px solid rgba(245,244,240,0.1)",
-            paddingTop: "3rem",
-          }}
-          className="contact-grid"
-        >
-          {/* Left */}
-          <p
-            style={{
-              fontSize: "0.9rem",
-              fontWeight: 300,
-              lineHeight: 1.9,
-              color: "rgba(245,244,240,0.45)",
-              maxWidth: 340,
-            }}
-          >
-            Whether it&apos;s a collaboration, a conversation, or just a question —
-            I&apos;m always open. The best connections start with a simple hello.
+        <div className="contact-grid">
+          <p className="contact-intro">
+            Whether it&apos;s a collaboration, a conversation, or just a question — I&apos;m
+            always open. The best connections start with a simple hello.
           </p>
 
-          {/* Right: links */}
-          <div>
+          <div className="contact-links">
             {links.map((link, i) => (
-              <a
-                key={i}
-                href={link.href}
-                className="contact-link"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "1.1rem 0",
-                  borderBottom: "1px solid rgba(245,244,240,0.08)",
-                  textDecoration: "none",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "rgba(245,244,240,0.35)",
-                  }}
-                >
-                  {link.label}
-                </span>
-                <span
-                  className="contact-link-val"
-                  style={{
-                    fontSize: "0.875rem",
-                    fontWeight: 300,
-                    color: "rgba(245,244,240,0.65)",
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "rgba(245,244,240,0.65)")
-                  }
-                >
-                  {link.value} ↗
-                </span>
+              <a key={i} href={link.href} className="contact-link">
+                <span className="contact-link-key">{link.label}</span>
+                <span className="contact-link-val">{link.value} ↗</span>
               </a>
             ))}
           </div>
         </div>
 
-        {/* Built with */}
-        <div style={{ marginTop: "5rem", paddingTop: "3rem", borderTop: "1px solid rgba(245,244,240,0.08)" }}>
-          <p style={{ fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(245,244,240,0.25)", marginBottom: "1.75rem" }}>
-            Built with
-          </p>
+        <div className="built-with">
+          <p className="built-with-label">Built with</p>
           <div className="built-with-grid">
-            {[
-              { name: "Claude Code", desc: "AI pair programmer" },
-              { name: "Next.js 15", desc: "App Router · React framework" },
-              { name: "Three.js", desc: "WebGL · 3D neural brain" },
-              { name: "GSAP", desc: "ScrollTrigger animations" },
-              { name: "TipTap", desc: "Rich text editor" },
-              { name: "Supabase", desc: "PostgreSQL · Auth · Storage" },
-              { name: "Resend", desc: "Transactional email" },
-              { name: "Vercel", desc: "Hosting · Edge network" },
-              { name: "TypeScript", desc: "Type-safe codebase" },
-              { name: "GoDaddy", desc: "Domain registrar" },
-            ].map((tool) => (
-              <div key={tool.name} style={{ borderBottom: "1px solid rgba(245,244,240,0.06)", paddingBottom: "0.9rem" }}>
-                <p style={{ fontSize: "0.78rem", fontWeight: 400, color: "rgba(245,244,240,0.6)", marginBottom: "0.2rem" }}>{tool.name}</p>
-                <p style={{ fontSize: "0.65rem", color: "rgba(245,244,240,0.25)", letterSpacing: "0.04em" }}>{tool.desc}</p>
+            {builtWith.map((tool) => (
+              <div key={tool.name}>
+                <p className="built-with-name">{tool.name}</p>
+                <p className="built-with-desc">{tool.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            marginTop: "3rem",
-            paddingTop: "2rem",
-            borderTop: "1px solid rgba(245,244,240,0.06)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
-        >
-          <p style={{ fontSize: "0.72rem", color: "rgba(245,244,240,0.2)" }}>
-            © 2025 Sayandeep Giri
-          </p>
-          <a
-            href="/admin/login"
-            style={{ fontSize: "0.6rem", color: "rgba(245,244,240,0.08)", textDecoration: "none", letterSpacing: "0.06em" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(245,244,240,0.25)")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(245,244,240,0.08)")}
-          >
-            ·
-          </a>
+        <div className="contact-foot">
+          <p>© 2025 Sayandeep Giri</p>
+          <a href="/admin/login" aria-label="Admin">·</a>
         </div>
       </div>
 
       <style>{`
-        @media (min-width: 768px) {
-          .contact-grid { grid-template-columns: 1fr 1fr !important; }
+        .contact {
+          position: relative;
+          padding: 12rem 0 5rem;
+          background-color: transparent;
+        }
+        .contact-wrap { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .contact-label {
+          margin-bottom: 2rem;
+          font-size: 0.7rem;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+
+        .contact-head {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: clamp(2.5rem, 7vw, 6rem);
+          font-weight: 500;
+          line-height: 1.05;
+          color: var(--bg);
+          margin-bottom: 5rem;
+          perspective: 900px;
+        }
+        .contact-head em { color: var(--accent); font-style: italic; }
+        .contact-line { transform-style: preserve-3d; }
+        .contact-char { display: inline-block; transform-origin: 50% 100% -40px; }
+
+        .contact-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          border-top: 1px solid rgba(245, 244, 240, 0.1);
+          padding-top: 3rem;
+        }
+        .contact-intro {
+          font-size: 0.9rem;
+          font-weight: 300;
+          line-height: 1.9;
+          color: rgba(245, 244, 240, 0.45);
+          max-width: 340px;
+        }
+
+        .contact-links { perspective: 900px; }
+        .contact-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1.1rem 0;
+          border-bottom: 1px solid rgba(245, 244, 240, 0.08);
+          text-decoration: none;
+          transform-origin: left center;
+          transition: padding-left 0.3s, border-color 0.3s;
+        }
+        .contact-link:hover {
+          padding-left: 0.75rem;
+          border-color: rgba(192, 57, 43, 0.6);
+        }
+        .contact-link-key {
+          font-size: 0.65rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(245, 244, 240, 0.35);
+        }
+        .contact-link-val {
+          font-size: 0.875rem;
+          font-weight: 300;
+          color: rgba(245, 244, 240, 0.65);
+          transition: color 0.25s;
+        }
+        .contact-link:hover .contact-link-val { color: var(--accent); }
+
+        .built-with {
+          margin-top: 5rem;
+          padding-top: 3rem;
+          border-top: 1px solid rgba(245, 244, 240, 0.08);
+        }
+        .built-with-label {
+          font-size: 0.6rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: rgba(245, 244, 240, 0.25);
+          margin-bottom: 1.75rem;
         }
         .built-with-grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
           gap: 1.25rem 2rem;
         }
+        .built-with-grid > div {
+          border-bottom: 1px solid rgba(245, 244, 240, 0.06);
+          padding-bottom: 0.9rem;
+        }
+        .built-with-name {
+          font-size: 0.78rem;
+          color: rgba(245, 244, 240, 0.6);
+          margin-bottom: 0.2rem;
+        }
+        .built-with-desc {
+          font-size: 0.65rem;
+          color: rgba(245, 244, 240, 0.25);
+          letter-spacing: 0.04em;
+        }
+
+        .contact-foot {
+          margin-top: 3rem;
+          padding-top: 2rem;
+          border-top: 1px solid rgba(245, 244, 240, 0.06);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+        .contact-foot p { font-size: 0.72rem; color: rgba(245, 244, 240, 0.2); }
+        .contact-foot a {
+          font-size: 0.6rem;
+          color: rgba(245, 244, 240, 0.08);
+          text-decoration: none;
+          letter-spacing: 0.06em;
+          transition: color 0.25s;
+        }
+        .contact-foot a:hover { color: rgba(245, 244, 240, 0.25); }
+
+        @media (min-width: 768px) {
+          .contact-grid { grid-template-columns: 1fr 1fr; }
+        }
         @media (max-width: 1023px) {
-          .built-with-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .built-with-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 767px) {
-          #contact { padding: 6rem 0 3rem !important; }
-          .contact-head { margin-bottom: 3rem !important; font-size: clamp(2rem, 9vw, 3.5rem) !important; }
-          .contact-link { flex-direction: column !important; align-items: flex-start !important; gap: 0.3rem; padding: 1.4rem 0 !important; }
-          .contact-link-val { font-size: 0.78rem !important; word-break: break-all; }
-          .built-with-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .contact { padding: 7rem 0 3rem; }
+          .contact-head {
+            margin-bottom: 3rem;
+            font-size: clamp(2rem, 9vw, 3.5rem);
+          }
+          .contact-link {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+            padding: 1.4rem 0;
+          }
+          .contact-link-val { font-size: 0.78rem; word-break: break-all; }
+          .built-with-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
     </section>

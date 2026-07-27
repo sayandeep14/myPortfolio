@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 const projects = [
   {
@@ -41,279 +38,303 @@ const projects = [
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (prefersReducedMotion()) return;
+
     const ctx = gsap.context(() => {
-      // Section heading drifts right
-      gsap.to(".proj-heading", {
-        x: 50,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.5,
-        },
+      const mm = gsap.matchMedia();
+
+      // Desktop/tablet: pin the stage and drive the track sideways. Each card's
+      // 3D rotation is derived from its live distance to the viewport centre,
+      // so the row reads as a carousel turning past you.
+      mm.add("(min-width: 768px)", () => {
+        const track = trackRef.current!;
+        const cards = gsap.utils.toArray<HTMLElement>(".proj-card");
+
+        const setters = cards.map((c) => ({
+          rotY: gsap.quickSetter(c, "rotateY", "deg"),
+          z: gsap.quickSetter(c, "z", "px"),
+          opacity: gsap.quickSetter(c, "opacity"),
+        }));
+
+        const shape = () => {
+          const mid = window.innerWidth / 2;
+          cards.forEach((card, i) => {
+            const r = card.getBoundingClientRect();
+            const d = (r.left + r.width / 2 - mid) / window.innerWidth; // ≈ -1…1
+            const s = setters[i];
+            s.rotY(gsap.utils.clamp(-52, 52, -d * 58));
+            s.z(-Math.abs(d) * 380);
+            s.opacity(1 - gsap.utils.clamp(0, 0.6, Math.abs(d) * 0.7));
+          });
+        };
+
+        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 160);
+
+        const tween = gsap.to(track, {
+          x: () => -distance(),
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".proj-stage",
+            start: "top top",
+            end: () => "+=" + (distance() + window.innerHeight * 0.6),
+            pin: true,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+            onUpdate: shape,
+            onRefresh: shape,
+          },
+        });
+
+        shape();
+        return () => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+          gsap.set(cards, { clearProps: "rotateY,z,opacity" });
+          gsap.set(track, { clearProps: "x" });
+        };
       });
 
-      // Section number drifts left at different rate
-      gsap.to(".proj-label", {
-        x: -30,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 2,
-        },
-      });
-
-      sectionRef.current?.querySelectorAll(".proj-row").forEach((row, i) => {
-        gsap.fromTo(
-          row,
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            ease: "power3.out",
-            scrollTrigger: { trigger: row, start: "top 86%" },
-            delay: i * 0.08,
-          }
+      // Mobile: no pinning — cards stack and tilt in individually.
+      mm.add("(max-width: 767px)", () => {
+        const tweens = gsap.utils.toArray<HTMLElement>(".proj-card").map((card) =>
+          gsap.fromTo(
+            card,
+            { rotateX: -35, y: 60, opacity: 0 },
+            {
+              rotateX: 0,
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "journey",
+              scrollTrigger: { trigger: card, start: "top 88%" },
+            }
+          )
         );
+        return () => tweens.forEach((t) => { t.scrollTrigger?.kill(); t.kill(); });
       });
+
+      return () => mm.revert();
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="projects"
-      style={{
-        padding: "9rem 0",
-        backgroundColor: "var(--bg)",
-        borderTop: "1px solid var(--border)",
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            marginBottom: "4rem",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
-        >
+    <section ref={sectionRef} id="projects" className="proj">
+      <div className="proj-stage">
+        <div className="proj-head">
           <div>
-            <p
-              className="proj-label"
-              style={{
-                marginBottom: "1rem",
-                fontSize: "0.7rem",
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-                color: "var(--accent)",
-              }}
-            >
-              03 — Projects
-            </p>
-            <h2
-              className="proj-heading"
-              style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                fontSize: "clamp(2rem, 4vw, 3.2rem)",
-                fontWeight: 500,
-                lineHeight: 1.18,
-                color: "var(--ink)",
-              }}
-            >
-              Selected <em style={{ color: "var(--accent)" }}>work.</em>
+            <p className="section-label proj-label">03 — Projects</p>
+            <h2 className="proj-heading">
+              Selected <em>work.</em>
             </h2>
           </div>
-          <p
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--muted)",
-              fontWeight: 300,
-              maxWidth: 240,
-              lineHeight: 1.7,
-            }}
-          >
+          <p className="proj-note">
             Placeholder projects — real ones coming soon.
+            <span className="proj-hint">Keep scrolling →</span>
           </p>
         </div>
 
-        {/* Project rows */}
-        <div>
-          {projects.map((project, i) => (
-            <a
-              key={i}
-              href={project.href}
-              className="proj-row"
-              style={{
-                display: "block",
-                borderTop: "1px solid var(--border)",
-                padding: "2.5rem 0",
-                textDecoration: "none",
-                transition: "background-color 0.2s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "rgba(17,17,17,0.02)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "3rem 1fr",
-                  gap: "2rem",
-                  alignItems: "start",
-                }}
-                className="proj-inner"
+        <div className="proj-viewport">
+          <div ref={trackRef} className="proj-track layer-3d">
+            {projects.map((project) => (
+              <a
+                key={project.number}
+                href={project.href}
+                className="proj-card layer-3d"
               >
-                {/* Number */}
-                <span
-                  style={{
-                    fontSize: "0.72rem",
-                    color: "var(--muted)",
-                    paddingTop: "0.3rem",
-                  }}
-                >
-                  {project.number}
-                </span>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr",
-                    gap: "1rem",
-                  }}
-                  className="proj-content"
-                >
-                  {/* Top row */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                      gap: "0.75rem",
-                    }}
+                <div className="proj-card-top">
+                  <span className="proj-num">{project.number}</span>
+                  <span
+                    className={`proj-status${
+                      project.status === "Production" ? " is-live" : ""
+                    }`}
                   >
-                    <div>
-                      <p
-                        style={{
-                          fontSize: "0.65rem",
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          color: "var(--muted)",
-                          marginBottom: "0.35rem",
-                        }}
-                      >
-                        {project.category}
-                      </p>
-                      <h3
-                        style={{
-                          fontFamily: "var(--font-playfair), Georgia, serif",
-                          fontSize: "1.4rem",
-                          fontWeight: 500,
-                          color: "var(--ink)",
-                          transition: "color 0.2s",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--ink)")}
-                      >
-                        {project.title} ↗
-                      </h3>
-                    </div>
-
-                    <span
-                      style={{
-                        fontSize: "0.62rem",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        padding: "0.25rem 0.85rem",
-                        border: `1px solid ${project.status === "Production" ? "var(--accent)" : "var(--border)"}`,
-                        color:
-                          project.status === "Production"
-                            ? "var(--accent)"
-                            : "var(--muted)",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {project.status}
-                    </span>
-                  </div>
-
-                  {/* Description + tech */}
-                  <div
-                    className="proj-desc-row"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                      gap: "1rem",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "0.875rem",
-                        fontWeight: 300,
-                        lineHeight: 1.8,
-                        color: "var(--muted)",
-                        maxWidth: 480,
-                      }}
-                    >
-                      {project.description}
-                    </p>
-
-                    <div
-                      className="proj-tech"
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "0.35rem",
-                        alignItems: "flex-start",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      {project.tech.map((t) => (
-                        <span
-                          key={t}
-                          style={{
-                            fontSize: "0.65rem",
-                            color: "var(--muted)",
-                            border: "1px solid var(--border)",
-                            padding: "0.2rem 0.6rem",
-                          }}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                    {project.status}
+                  </span>
                 </div>
-              </div>
-            </a>
-          ))}
 
-          <div style={{ borderTop: "1px solid var(--border)" }} />
+                <p className="proj-cat">{project.category}</p>
+                <h3 className="proj-title">{project.title} ↗</h3>
+                <p className="proj-desc">{project.description}</p>
+
+                <div className="proj-tech">
+                  {project.tech.map((t) => (
+                    <span key={t}>{t}</span>
+                  ))}
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 
       <style>{`
+        .proj {
+          position: relative;
+          background-color: transparent;
+          border-top: 1px solid var(--border);
+        }
+        .proj-stage {
+          min-height: 100svh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 3rem;
+          padding: 6rem 0;
+          overflow: hidden;
+        }
+
+        .proj-head {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 2rem;
+          width: 100%;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+        .proj-label { margin-bottom: 1rem; }
+        .proj-heading {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: clamp(2rem, 4vw, 3.2rem);
+          font-weight: 500;
+          line-height: 1.18;
+          color: var(--ink);
+        }
+        .proj-heading em { color: var(--accent); }
+        .proj-note {
+          font-size: 0.8rem;
+          color: var(--muted);
+          font-weight: 300;
+          max-width: 240px;
+          line-height: 1.7;
+        }
+        .proj-hint {
+          display: block;
+          margin-top: 0.6rem;
+          font-size: 0.62rem;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+
+        /* Perspective must live on the cards' immediate ancestor chain. The
+           stage can't provide it: it only reaches its direct children, and a
+           plain .proj-viewport would flatten everything below it. */
+        .proj-viewport {
+          width: 100%;
+          overflow: visible;
+          perspective: 1500px;
+          perspective-origin: 50% 50%;
+        }
+        .proj-track {
+          display: flex;
+          align-items: stretch;
+          gap: 2rem;
+          padding: 2rem max(2rem, calc((100vw - 1200px) / 2));
+          width: max-content;
+          transform-style: preserve-3d;
+        }
+
+        .proj-card {
+          flex: 0 0 auto;
+          width: min(480px, 74vw);
+          display: flex;
+          flex-direction: column;
+          padding: 2.5rem;
+          border: 1px solid var(--border);
+          background-color: rgba(245, 244, 240, 0.72);
+          backdrop-filter: blur(8px);
+          text-decoration: none;
+          transform-origin: center center;
+          will-change: transform, opacity;
+          transition: border-color 0.3s, background-color 0.3s;
+        }
+        .proj-card:hover {
+          border-color: var(--accent);
+          background-color: rgba(245, 244, 240, 0.9);
+        }
+
+        .proj-card-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 2.5rem;
+        }
+        .proj-num {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 2.4rem;
+          font-weight: 600;
+          line-height: 1;
+          color: var(--border);
+        }
+        .proj-status {
+          font-size: 0.62rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          padding: 0.25rem 0.85rem;
+          border: 1px solid var(--border);
+          color: var(--muted);
+          white-space: nowrap;
+        }
+        .proj-status.is-live { border-color: var(--accent); color: var(--accent); }
+
+        .proj-cat {
+          font-size: 0.65rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--muted);
+          margin-bottom: 0.5rem;
+        }
+        .proj-title {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 1.75rem;
+          font-weight: 500;
+          color: var(--ink);
+          margin-bottom: 1.25rem;
+          transition: color 0.25s;
+        }
+        .proj-card:hover .proj-title { color: var(--accent); }
+        .proj-desc {
+          font-size: 0.875rem;
+          font-weight: 300;
+          line-height: 1.85;
+          color: var(--muted);
+          margin-bottom: auto;
+          padding-bottom: 2rem;
+        }
+        .proj-tech { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .proj-tech span {
+          font-size: 0.65rem;
+          color: var(--muted);
+          border: 1px solid var(--border);
+          padding: 0.2rem 0.6rem;
+        }
+
         @media (max-width: 767px) {
-          #projects { padding: 5rem 0 !important; }
-          .proj-inner { grid-template-columns: 2rem 1fr !important; gap: 1rem !important; }
-          .proj-desc-row { flex-direction: column !important; }
-          .proj-tech { justify-content: flex-start !important; }
-          .proj-row { padding: 2rem 0 !important; }
+          .proj-stage {
+            min-height: 0;
+            padding: 5rem 0;
+            gap: 2.5rem;
+            overflow: visible;
+          }
+          .proj-hint { display: none; }
+          .proj-viewport { overflow: visible; }
+          .proj-track {
+            flex-direction: column;
+            width: 100%;
+            padding: 0 2rem;
+            gap: 1.5rem;
+            perspective: 900px;
+          }
+          .proj-card { width: 100%; padding: 2rem; }
+          .proj-desc { padding-bottom: 1.5rem; }
         }
       `}</style>
     </section>

@@ -30,7 +30,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* No `scroll-behavior: smooth` — ScrollSmoother owns scrolling and native
+     smooth scrolling fights it. Anchor links go through smoother.scrollTo(). */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -38,7 +39,9 @@ body {
   background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
-  overflow-x: hidden;
+  /* `clip` rather than `hidden`: it contains horizontal overflow without
+     turning <body> into a scroll container, which would break ScrollSmoother. */
+  overflow-x: clip;
 }
 
 ::selection {
@@ -46,16 +49,180 @@ body {
   color: var(--bg);
 }
 
-::-webkit-scrollbar {
-  width: 3px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--accent);
-}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); }
 
 .font-display {
   font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
+}
+
+/* ── Journey layering ──────────────────────────────────────────────────────
+   backdrop (0) → particle canvas (1) → page content (2) → nav (500) → cursor.
+   Home-page sections are transparent so the canvas reads through them. */
+
+.journey-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--bg);
+  pointer-events: none;
+}
+
+.journey-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
+}
+
+#smooth-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* Without ScrollSmoother (reduced motion) the wrapper must not clip or fix
+   anything — these ids are otherwise styled by the plugin itself. */
+@media (prefers-reduced-motion: reduce) {
+  #smooth-wrapper, #smooth-content { transform: none !important; }
+}
+
+/* Shared section eyebrow ("01 — About") */
+.section-label {
+  margin-bottom: 4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ── 3D primitives ───────────────────────────────────────────────────────── */
+
+.scene-3d {
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
+.layer-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Masked reveal wrapper for SplitText lines/chars */
+.reveal-mask {
+  display: block;
+  overflow: hidden;
+}
+
+/* ── Chapter rail ─────────────────────────────────────────────────────────── */
+
+.chapter-rail {
+  /* Tokens flip when the journey darkens the page. Using explicit colours
+     rather than mix-blend-mode, which turned the terracotta accent cyan
+     against the cream backdrop. */
+  --rail-fg: #111111;
+  --rail-dim: rgba(17, 17, 17, 0.3);
+
+  position: fixed;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.9rem;
+  pointer-events: auto;
+}
+
+html[data-journey-dark="1"] .chapter-rail {
+  --rail-fg: #f5f4f0;
+  --rail-dim: rgba(245, 244, 240, 0.32);
+}
+
+.chapter-rail .rail-index {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: var(--rail-fg);
+  opacity: 0.45;
+  transition: color 0.4s;
+}
+
+.chapter-rail .rail-track {
+  width: 1px;
+  height: 64px;
+  background: var(--rail-dim);
+  position: relative;
+  transition: background-color 0.4s;
+}
+
+.chapter-rail .rail-fill {
+  position: absolute;
+  inset: 0;
+  background: #c0392b;
+  transform-origin: top;
+}
+
+.chapter-rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: flex-end;
+}
+
+.chapter-rail a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--rail-fg);
+  transition: color 0.4s;
+}
+
+.chapter-rail .rail-label {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.chapter-rail a:hover .rail-label,
+.chapter-rail a.is-active .rail-label {
+  opacity: 0.75;
+  transform: translateX(0);
+}
+
+.chapter-rail .rail-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rail-dim);
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.chapter-rail a.is-active .rail-dot {
+  background: #c0392b;
+  transform: scale(1.7);
+}
+
+@media (max-width: 1023px) {
+  .chapter-rail { display: none; }
+}
+
+/* ── Motion preferences ───────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
