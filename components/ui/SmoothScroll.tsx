@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { gsap, ScrollTrigger, ScrollSmoother, prefersReducedMotion } from "@/lib/gsap";
 
 /**
@@ -9,13 +10,19 @@ import { gsap, ScrollTrigger, ScrollSmoother, prefersReducedMotion } from "@/lib
  *
  * Anything `position: fixed` must be rendered OUTSIDE this component — the
  * content element is transformed, which would make fixed children scroll away.
+ *
+ * The home page is exempt: the scroll-world engine maps raw scroll position to
+ * video `currentTime` itself. ScrollSmoother's transformed content element and
+ * its own rAF loop would fight that mapping and desync the film from the scrollbar.
  */
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const wrapper = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isWorld = pathname === "/";
 
   useLayoutEffect(() => {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || isWorld) return;
 
     const ctx = gsap.context(() => {
       const smoother = ScrollSmoother.create({
@@ -61,7 +68,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [isWorld]);
+
+  // No wrapper/content divs on the home page — the engine wants a plain
+  // document scroll to read from.
+  if (isWorld) return <>{children}</>;
 
   return (
     <div id="smooth-wrapper" ref={wrapper}>

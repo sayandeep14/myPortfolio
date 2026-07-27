@@ -6,6 +6,150 @@
   --accent: #c0392b;
   --muted: #888888;
   --border: rgba(17, 17, 17, 0.1);
+
+  /* Scroll-world engine tokens. The engine wraps its own defaults in
+     `@layer sw`, so these unlayered declarations win regardless of the order
+     its injected <style> lands in — the film and the page chrome stay one
+     identity without specificity hacks. */
+  --sw-bg: var(--bg);
+  --sw-ink: var(--ink);
+  --sw-ink-soft: var(--muted);
+  --sw-accent: var(--accent);
+  --sw-font-display: var(--font-playfair), Georgia, serif;
+  --sw-font-body: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+/* ── Pointer parallax over the film ────────────────────────────────────────
+   Real-time response layered on the pre-rendered flight: the video plane
+   drifts against the pointer, so the scene reacts to the visitor even though
+   the camera path itself is fixed.
+
+   Only `.sw-scene__video` is targeted. The engine sets an INLINE transform on
+   `.sw-scene__still` (its Ken Burns drift), which would win over this rule
+   anyway — and fighting it would fight the poster animation.
+
+   The 1.06 scale is what gives the translate somewhere to go: without it the
+   drift would expose the frame edge. */
+.sw-host .sw-scene__video {
+  transform: scale(1.06)
+    translate3d(
+      calc(var(--swp-x, 0) * -20px),
+      calc(var(--swp-y, 0) * -14px),
+      0
+    );
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* Touch has no hover pointer to track, and the reduced-motion contract means
+   no unrequested movement. */
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .sw-host .sw-scene__video {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── Links constellation (the real-time chapter) ───────────────────────────
+   Sits above the film's video layer but below its copy and nav, and only
+   accepts pointer events while its chapter is on screen. */
+.lc-root {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lc-root.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Scrim behind the constellation.
+   The cream particles need a dark ground to read against, and the leg this
+   chapter plays over can't be relied on to supply one: in a continuous-take
+   chain only the first leg starts from its still, so later scenes drift from
+   the art direction and may arrive bright. This makes the live chapter legible
+   over ANY backdrop instead of hoping the render cooperates. */
+.lc-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 62% 62% at 62% 50%,
+      rgba(10, 10, 12, 0.82) 0%,
+      rgba(10, 10, 12, 0.62) 45%,
+      rgba(10, 10, 12, 0) 78%
+    );
+  pointer-events: none;
+}
+.lc-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.lc-nodes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Nodes are positioned by JS each frame (translate3d), so no layout here —
+   `top/left: 0` plus the transform is the whole placement model. */
+.lc-node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 999px;
+  color: var(--bg);
+  background: rgba(17, 17, 17, 0.42);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(245, 244, 240, 0.16);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.lc-node i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 4px rgba(245, 244, 240, 0.14);
+  flex: none;
+}
+.lc-node--tech i {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.22);
+}
+.lc-node:hover,
+.lc-node:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.lc-node:hover i,
+.lc-node:focus-visible i {
+  background: var(--bg);
+  box-shadow: 0 0 0 4px rgba(245, 244, 240, 0.3);
+}
+
+@media (max-width: 860px) {
+  .lc-node {
+    font-size: 0.58rem;
+    padding: 0.26rem 0.5rem;
+    letter-spacing: 0.06em;
+  }
 }
 
 @theme inline {

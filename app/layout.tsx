@@ -3,7 +3,6 @@ import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/ui/Navbar";
 import CustomCursor from "@/components/ui/CustomCursor";
-import HomeStage from "@/components/ui/HomeStage";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 
 const playfair = Playfair_Display({
@@ -45,7 +44,6 @@ export default function RootLayout({
             transformed, which would otherwise drag fixed children along. */}
         <CustomCursor />
         <Navbar />
-        <HomeStage />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
