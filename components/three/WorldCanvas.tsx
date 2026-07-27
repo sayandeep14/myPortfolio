@@ -39,7 +39,7 @@ interface Installation {
 }
 
 const WORLD: Installation[] = [
-  { id: "neural",  anchor: "hero",       build: brain,     offset: [ 0.0,  0.0], scale: 3.4, accent: 0.16, spin: [0.010, -0.024, 0.004] },
+  { id: "neural",  anchor: "hero",       build: brain,     offset: [-3.2,  0.0], scale: 3.4, accent: 0.16, spin: [0.010, -0.024, 0.004] },
   { id: "helix",   anchor: "about",      build: helix,     offset: [ 5.4, -1.2], scale: 3.0, accent: 0.30, spin: [0.004,  0.030, 0.000] },
   { id: "climb",   anchor: "experience", build: staircase, offset: [-5.6,  1.8], scale: 3.1, accent: 0.22, spin: [0.006, -0.020, 0.008] },
   { id: "knot",    anchor: "projects",   build: knot,      offset: [ 4.8,  1.2], scale: 3.2, accent: 0.28, spin: [0.014,  0.018, 0.006] },
@@ -230,8 +230,11 @@ export default function WorldCanvas() {
     materials.push(dustMat);
 
     // ── Flight path ────────────────────────────────────────────────────────
+    // The first graze is widened to match the brain's leftward offset, keeping
+    // its waypoint near x=0. Without that the camera simply follows the
+    // structure left and re-centres it on screen, cancelling the shift.
     const grazes: [number, number][] = [
-      [1.6, 0.9], [-1.8, 0.7], [1.9, -0.9], [-1.6, 1.0], [1.8, 0.6], [-1.7, -0.8],
+      [3.4, 0.9], [-1.8, 0.7], [1.9, -0.9], [-1.6, 1.0], [1.8, 0.6], [-1.7, -0.8],
     ];
     const points: THREE.Vector3[] = [new THREE.Vector3(0, 0.6, 12)];
     for (let i = 0; i < centers.length - 1; i++) {
